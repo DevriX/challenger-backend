@@ -1,23 +1,102 @@
-# ignore everything in the root except the "wp-content" directory.
-!wp-content/
-
-# ignore everything in the "wp-content" directory, except:
-# "mu-plugins", "plugins", "themes" directory
-wp-content/*
-!wp-content/mu-plugins/
-!wp-content/plugins/
-!wp-content/themes/
-
-# ignore these plugins
+wp-content/advanced-cache.php
+wp-content/backup-db/
+wp-content/backups/
+wp-content/blogs.dir/
+wp-content/cache/
+wp-content/upgrade/
+wp-content/uploads/
+wp-content/wp-cache-config.php
 wp-content/plugins/hello.php
 
-# ignore specific themes
-wp-content/themes/twenty*/
+### Setup global gitignore file ###
+wp-config-local.php
+wp-config.php
+wp-config-hosting.php
+wp-content/db.php
+.DS_Store
 
-# ignore node dependency directories
+### Sytem files ###
+*.log
+*.swp
+*.enc
+*.save
+*.save.*
+.DS_Store
+.htaccess
+sitemap.xml
+sitemap.xml.gz
+
+### IDE and Text Editors files ###
+.buildpath
+.project
+.settings/
+.vscode/
+.idea/
+
+### Package managers
 node_modules/
 
-# ignore log files and databases
-*.log
-*.sql
-*.sqlite
+### Plugins ###
+wp-content/plugins/wordpress-importer/
+wp-content/plugins/BE-Media-from-Production/
+wp-content/plugins/redis-cache/
+wp-content/plugins/akismet/
+wp-content/plugins/dx-localhost/
+
+### WordPress Core files and folders ###
+license.txt
+readme.html
+/index.php
+wp-activate.php
+wp-admin/
+wp-admin
+wp-blog-header.php
+wp-comments-post.php
+wp-cron.php
+wp-includes/
+wp-includes
+wp-links-opml.php
+wp-load.php
+wp-login.php
+wp-mail.php
+wp-settings.php
+wp-signup.php
+wp-trackback.php
+xmlrpc.php
+db-config.php
+wp-config-hosting.php
+wp-config.php
+
+### Pagely mu-plugins ###
+wp-content/mu-plugins/pagely-app-stats/
+wp-content/mu-plugins/pagely-assets/
+wp-content/mu-plugins/pagely-cache-control/
+wp-content/mu-plugins/pagely-cache-purge/
+wp-content/mu-plugins/pagely-cdn/
+wp-content/mu-plugins/pagely-cli/
+wp-content/mu-plugins/pagely-management-v2.php
+wp-content/mu-plugins/pagely-security-patches/
+wp-content/mu-plugins/pagely-status/
+wp-content/mu-plugins/pagely-util/
+wp-content/mu-plugins/pagely-wp-cli-mail-patch/
+wp-content/mu-plugins/pagely-pressthumb.php
+wp-content/mu-plugins/pagely-redis-debug.php
+
+# Some Cache folders and files
+cache/
+
+# We are having only wp-content/* items at the moment, so this makes more sense
+uploads/
+upgrade/
+wp-content/object-cache.php
+
+### Themes ###
+wp-content/themes/twentyfifteen/
+wp-content/themes/twentysixteen/
+wp-content/themes/twentyseventeen/
+
+### Backups Files ###
+# List the backup files here
+
+### Setup files ###
+# List the Setup files here
