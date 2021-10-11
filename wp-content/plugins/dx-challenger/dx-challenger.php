@@ -393,8 +393,9 @@ function dx_challenger_on_install() {
 
 	if ( $wpdb->get_var( "show tables like '$voting_table'" ) != $voting_table ) {
 		$voting_sql = "CREATE TABLE $voting_table (
-			challenge_id mediumint(9) NOT NULL AUTO_INCREMENT,
+			challenge_id mediumint(9) NOT NULL,
 			user_voted mediumint(9) NOT NULL,
+			solution_id mediumint NOT NULL,
 			PRIMARY KEY  (challenge_id)
 			) $charset_collate;";
 
