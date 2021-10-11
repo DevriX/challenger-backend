@@ -12,6 +12,8 @@
  * @package         Dx_Challenger
  */
 
+$text_domain = 'dx-challenger';
+
 function dx_challenger_post_types() {
 	register_post_type(
 		'challenge',
@@ -147,6 +149,160 @@ function dx_challenger_challenge_meta_fields() {
 		)
 	);
 }
+
+/* Add solutions to GraphQL */
+add_action( 'graphql_register_types', function() {
+
+	register_graphql_object_type(
+		'Solution',
+		[
+			'description' => __( 'Solution', $text_domain ),
+			'fields'      => [
+				'id' => [
+					'type'        => 'Number',
+					'description' => 'Solution id'
+				],
+				'challenge_id'  => [
+					'type'        => 'Number',
+					'description' => 'Challenge id'
+				],
+				'user_id'       => [
+					'type'        => 'Number',
+					'description' => 'User id'
+				],
+				'link_demo' => [
+					'type' => 'String',
+					'description' => 'Solution demo'
+				],
+				'link_code' => [
+					'type' => 'String',
+					'description' => 'Solution code'
+				],
+				'comment' => [
+					'type' => 'String',
+					'description' => 'Comment'
+				]
+			],
+		]
+	);
+
+	register_graphql_field(
+		'RootQuery',
+		'solutions',
+		[
+			'description' => __( 'Return solutions', $text_domain ),
+			'args' => [
+				'id' => [
+					'type' => 'Number',
+				],
+			],
+			'type'        => [ 'list_of' => 'solution' ],
+			'resolve'     => function($source, $args) {
+				global $wpdb;
+				$table_name = $wpdb->prefix . 'challenger_solutions';
+				$sql = "SELECT * FROM $table_name";
+				if ( isset( $args['id'] )) {
+					$id = $args['id'];
+					$sql = "SELECT * FROM $table_name WHERE id = $id";
+				}
+				$solutions = $wpdb->get_results($sql);
+
+				return $solutions;
+			}
+		]
+	);
+});
+
+
+
+/* Add Solution mutation to GraphQL */
+function dx_solution_mutation() {
+	register_graphql_mutation(
+		'submitSolution',
+		array(
+			'inputFields' => array(
+				'challengeId' => array(
+					'type' => 'Number',
+					'description' => __( 'Challenge id', $text_domain )
+				),
+				'userId' => array(
+					'type' => 'Number',
+					'description' => __( 'User id', $text_domain )
+				),
+				'linkDemo' => array(
+					'type' => 'String',
+					'description' => __( "Link to solution's demo", $text_domain )
+				),
+				'linkCode' => array(
+					'type' => 'String',
+					'description' => __( 'Repository link', $text_domain )
+				),
+				'comment' => array(
+					'type' => 'String',
+					'description' => __( 'Comment', $text_domain )
+				),
+			),
+
+			'outputFields' => array(
+				'challengeId' => array(
+					'type' => 'Number',
+					'description' => __( 'Challenge id', $text_domain),
+					'resolve' => function($payload) {
+						return $payload['challengeId'];
+					}
+				),
+				'userId' => array(
+					'type' => 'Number',
+					'description' => __( 'User id', $text_domain),
+					'resolve' => function($payload) {
+						return $payload['userId'];
+					}
+				),
+				'linkDemo' => array(
+					'type' => 'String',
+					'description' => __( "Link to solution's demo", $text_domain ),
+					'resolve' => function($payload) {
+						return $payload['linkDemo'];
+					}
+				),
+				'linkCode' => array(
+					'type' => 'String',
+					'description' => __( 'Repository link', $text_domain ),
+					'resolve' => function($payload) {
+						return $payload['linkCode'];
+					}
+				),
+				'comment' => array(
+					'type' => 'String',
+					'description' => __( 'Comment', $text_domain ),
+					'resolve' => function($payload) {
+						return $payload['comment'];
+					}
+				)
+			),
+				
+			'mutateAndGetPayload' => function( $input, $context, $info ) {
+				global $wpdb;     
+  			$table_name = $wpdb->prefix . 'challenger_solutions';
+
+				$data = array(
+					'challenge_id' => $input['challengeId'],
+					'user_id' => $input['userId'],
+					'link_demo' => $input['linkDemo'],
+					'link_code' => $input['linkCode'],
+					'comment' => $input['comment']
+				);
+
+				$wpdb->insert($table_name, $data);
+
+				return $input;
+			}
+			
+		),
+  );
+}
+
+add_action( 'graphql_register_types', 'dx_solution_mutation' );
 
 /* User Meta */
 function dx_challenger_user_meta( $user ) {
