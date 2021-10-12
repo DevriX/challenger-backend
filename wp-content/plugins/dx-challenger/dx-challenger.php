@@ -304,6 +304,137 @@ function dx_solution_mutation() {
 
 add_action( 'graphql_register_types', 'dx_solution_mutation' );
 
+/* Add votes query to GraphQL */
+add_action( 'graphql_register_types', function() {
+
+	register_graphql_object_type(
+		'Vote',
+		[
+			'description' => __( 'Vote', $text_domain ),
+			'fields'      => [
+				'count'  => [
+					'type'        => 'Number',
+					'description' => 'Votes count'
+				],
+			],
+		]
+	);
+
+	register_graphql_field(
+		'RootQuery',
+		'votes',
+		[
+			'description' => __( 'Return solution votes', $text_domain ),
+			'args' => [
+				'solutionId' => [
+					'type' => 'Number',
+				],
+			],
+			'type'        => 'Vote',
+			'resolve'     => function($source, $args) {
+				global $wpdb;
+				$table_name = $wpdb->prefix . 'challenger_voting';
+				$solution_id = $args['solutionId'];
+
+				$sql = "SELECT COUNT(solution_id) as 'count' FROM $table_name WHERE solution_id = $solution_id";
+
+				$votes = $wpdb->get_results($sql);
+
+				return array('count' => $votes[0]->count);
+			}
+		]
+	);
+});
+
+/* Add Vote mutation to GraphQL */
+function dx_voting_mutation() {
+	register_graphql_mutation(
+		'submitVote',
+		array(
+			'inputFields' => array(
+				'challengeId' => array(
+					'type' => 'Number',
+					'description' => __( 'Challenge id', $text_domain )
+				),
+				'userVoted' => array(
+					'type' => 'Number',
+					'description' => __( 'User id', $text_domain )
+				),
+				'solutionId' => array(
+					'type' => 'Number',
+					'description' => __( 'Solution id', $text_domain )
+				),
+			),
+
+			'outputFields' => array(
+				'challengeId' => array(
+					'type' => 'Number',
+					'description' => __( 'Challenge id', $text_domain),
+					'resolve' => function($payload) {
+						return $payload['challengeId'];
+					}
+				),
+				'userVoted' => array(
+					'type' => 'Number',
+					'description' => __( 'User id', $text_domain),
+					'resolve' => function($payload) {
+						return $payload['userVoted'];
+					}
+				),
+				'solutionId' => array(
+					'type' => 'Number',
+					'description' => __( 'Solution id', $text_domain)
+				),
+				'isDuplicateVote' => array(
+					'type' => 'Boolean',
+					'description' => __( 'Is duplicate vote', $text_domain)
+				),
+				'voteAdded' => array(
+					'type' => 'Boolean',
+					'description' => __( 'Is vote successfully added', $text_domain )
+				)
+			),
+				
+			'mutateAndGetPayload' => function( $input, $context, $info ) {
+				global $wpdb;     
+  			$table_name = $wpdb->prefix . 'challenger_voting';
+
+				$user_voted = $input['userVoted'];
+				$solution_id = $input['solutionId'];
+				$challengeId = $input['challengeId'];
+
+				$sql = "SELECT * from $table_name WHERE solution_id = $solution_id AND user_voted = $user_voted";
+				$voted = $wpdb->get_results($sql);
+
+				$vote_added = false;
+				if(empty($voted)) {
+					$data = array(
+						'challenge_id' => $challengeId,
+						'user_voted' => $user_voted,
+						'solution_id' => $solution_id
+					);
+	
+					$query_status = $wpdb->insert($table_name, $data);
+					$vote_added = $query_status != false;
+				}
+
+				$result = array(
+					'challengeId' => $challengeId,
+					'userVoted' => $user_voted,
+					'solutionId' => $solution_id,
+					'isDuplicateVote' => $voted,
+					'voteAdded' => $vote_added
+				);
+
+				return $result;
+			}
+			
+		),
+  );
+}
+
+add_action( 'graphql_register_types', 'dx_voting_mutation' );
+
 /* User Meta */
 function dx_challenger_user_meta( $user ) {
 	global $user_ID;
@@ -393,10 +524,11 @@ function dx_challenger_on_install() {
 
 	if ( $wpdb->get_var( "show tables like '$voting_table'" ) != $voting_table ) {
 		$voting_sql = "CREATE TABLE $voting_table (
+			id mediumint(9) NOT NULL AUTO_INCREMENT,
 			challenge_id mediumint(9) NOT NULL,
 			user_voted mediumint(9) NOT NULL,
 			solution_id mediumint NOT NULL,
-			PRIMARY KEY  (challenge_id)
+			PRIMARY KEY  (id)
 			) $charset_collate;";
 
 		dbDelta( $voting_sql );
