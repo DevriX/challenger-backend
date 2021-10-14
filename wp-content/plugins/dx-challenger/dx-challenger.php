@@ -163,11 +163,11 @@ add_action( 'graphql_register_types', function() {
 					'description' => 'Solution id'
 				],
 				'challenge_id'  => [
-					'type'        => 'Number',
+					'type'        => 'String',
 					'description' => 'Challenge id'
 				],
 				'user_id'       => [
-					'type'        => 'Number',
+					'type'        => 'String',
 					'description' => 'User id'
 				],
 				'link_demo' => [
@@ -222,11 +222,11 @@ function dx_solution_mutation() {
 		array(
 			'inputFields' => array(
 				'challengeId' => array(
-					'type' => 'Number',
+					'type' => 'String',
 					'description' => __( 'Challenge id', $text_domain )
 				),
 				'userId' => array(
-					'type' => 'Number',
+					'type' => 'String',
 					'description' => __( 'User id', $text_domain )
 				),
 				'linkDemo' => array(
@@ -245,14 +245,14 @@ function dx_solution_mutation() {
 
 			'outputFields' => array(
 				'challengeId' => array(
-					'type' => 'Number',
+					'type' => 'String',
 					'description' => __( 'Challenge id', $text_domain),
 					'resolve' => function($payload) {
 						return $payload['challengeId'];
 					}
 				),
 				'userId' => array(
-					'type' => 'Number',
+					'type' => 'String',
 					'description' => __( 'User id', $text_domain),
 					'resolve' => function($payload) {
 						return $payload['userId'];
@@ -353,11 +353,11 @@ function dx_voting_mutation() {
 		array(
 			'inputFields' => array(
 				'challengeId' => array(
-					'type' => 'Number',
+					'type' => 'String',
 					'description' => __( 'Challenge id', $text_domain )
 				),
 				'userVoted' => array(
-					'type' => 'Number',
+					'type' => 'String',
 					'description' => __( 'User id', $text_domain )
 				),
 				'solutionId' => array(
@@ -368,7 +368,7 @@ function dx_voting_mutation() {
 
 			'outputFields' => array(
 				'challengeId' => array(
-					'type' => 'Number',
+					'type' => 'String',
 					'description' => __( 'Challenge id', $text_domain),
 					'resolve' => function($payload) {
 						return $payload['challengeId'];
@@ -511,7 +511,7 @@ function dx_challenger_on_install() {
 	if ( $wpdb->get_var( "show tables like '$solutions_table'" ) != $solutions_table ) {
 		$sql = "CREATE TABLE $solutions_table (
 			id mediumint(9) NOT NULL AUTO_INCREMENT,
-			challenge_id mediumint(9) NOT NULL,
+			challenge_id text NOT NULL,
 			user_id mediumint(9) NOT NULL,
 			link_demo text,
 			link_code text NOT NULL,
@@ -525,9 +525,9 @@ function dx_challenger_on_install() {
 	if ( $wpdb->get_var( "show tables like '$voting_table'" ) != $voting_table ) {
 		$voting_sql = "CREATE TABLE $voting_table (
 			id mediumint(9) NOT NULL AUTO_INCREMENT,
-			challenge_id mediumint(9) NOT NULL,
+			challenge_id text NOT NULL,
 			user_voted mediumint(9) NOT NULL,
-			solution_id mediumint NOT NULL,
+			solution_id text NOT NULL,
 			PRIMARY KEY  (id)
 			) $charset_collate;";
 
