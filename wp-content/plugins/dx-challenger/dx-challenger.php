@@ -57,7 +57,7 @@ function dx_challenger_challenge_meta_markup( $post ) {
 	?>
 
 	<label for="dx_challenge_deadline">Deadline:</label>
-	<input type="text" name="dx_challenge_deadline" id="dx_challenge_deadline" value='<?php echo esc_textarea( $deadline ); ?>'>
+	<input type="text" name="dx_challenge_deadline" placeholder="yyyy/mm/dd" id="dx_challenge_deadline" value='<?php echo esc_textarea( $deadline ); ?>'>
 	<label for="dx_challenge_experience">Experience:</label>
   <input type="number" name="dx_challenge_experience" id="dx_challenge_experience" value="<?php echo esc_textarea( $experience ); ?>" />
   <label for="dx_challenge_difficulty">Difficulty:</label>
@@ -112,11 +112,11 @@ function dx_challenger_challenge_meta_fields() {
 		'Challenge',
 		'deadline',
 		array(
-			'type'    => 'Number',
+			'type'    => 'String',
 			'resolve' => function( $post ) {
 				global $post;
 				$deadline = get_post_meta( $post->ID, 'dx_challenge_deadline', true );
-				return empty( $deadline ) ? 0 : $deadline;
+				return empty( $deadline ) ? "" : $deadline;
 			},
 		)
 	);
