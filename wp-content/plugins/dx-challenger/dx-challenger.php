@@ -195,16 +195,26 @@ add_action( 'graphql_register_types', function() {
 				'id' => [
 					'type' => 'Number',
 				],
+				'challenge_id' => [
+					'type' => 'String'
+				],
 			],
 			'type'        => [ 'list_of' => 'solution' ],
 			'resolve'     => function($source, $args) {
 				global $wpdb;
 				$table_name = $wpdb->prefix . 'challenger_solutions';
 				$sql = "SELECT * FROM $table_name";
+
 				if ( isset( $args['id'] )) {
 					$id = $args['id'];
 					$sql = "SELECT * FROM $table_name WHERE id = $id";
 				}
+
+				if( isset( $args['challenge_id'] )) {
+					$challenge_id = $args['challenge_id'];
+					$sql = "SELECT * FROM $table_name WHERE challenge_id = $challenge_id";
+				}
+
 				$solutions = $wpdb->get_results($sql);
 
 				return $solutions;
