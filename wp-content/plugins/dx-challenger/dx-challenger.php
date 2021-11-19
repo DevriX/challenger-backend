@@ -12,8 +12,6 @@
  * @package         Dx_Challenger
  */
 
-$text_domain = 'dx-challenger';
-
 function dx_challenger_post_types() {
 	register_post_type(
 		'challenge',
@@ -156,7 +154,7 @@ add_action( 'graphql_register_types', function() {
 	register_graphql_object_type(
 		'Solution',
 		[
-			'description' => __( 'Solution', $text_domain ),
+			'description' => __( 'Solution', 'dx-challenger' ),
 			'fields'      => [
 				'id' => [
 					'type'        => 'Number',
@@ -190,7 +188,7 @@ add_action( 'graphql_register_types', function() {
 		'RootQuery',
 		'solutions',
 		[
-			'description' => __( 'Return solutions', $text_domain ),
+			'description' => __( 'Return solutions', 'dx-challenger' ),
 			'args' => [
 				'id' => [
 					'type' => 'Number',
@@ -211,6 +209,22 @@ add_action( 'graphql_register_types', function() {
 			}
 		]
 	);
+	/**
+	 * Connection from Solution to Users
+	 */
+	register_graphql_connection(
+		[
+			'fromType'       => 'Solution',
+			'toType'         => 'User',
+			'fromFieldName'  => 'author',
+			'oneToOne'       => true,
+			'resolve'        => function ( $source, $args, $context, $info ) {
+				$resolver = new WPGraphQL\Data\Connection\UserConnectionResolver( $source, $args, $context, $info );
+				$resolver->set_query_arg( 'include', [ $source ] );
+				return $resolver->one_to_one()->get_connection();
+			}
+		]
+	);
 });
 
 
@@ -223,58 +237,58 @@ function dx_solution_mutation() {
 			'inputFields' => array(
 				'challengeId' => array(
 					'type' => 'Number',
-					'description' => __( 'Challenge id', $text_domain )
+					'description' => __( 'Challenge id', 'dx-challenger' )
 				),
 				'userId' => array(
 					'type' => 'Number',
-					'description' => __( 'User id', $text_domain )
+					'description' => __( 'User id', 'dx-challenger' )
 				),
 				'linkDemo' => array(
 					'type' => 'String',
-					'description' => __( "Link to solution's demo", $text_domain )
+					'description' => __( "Link to solution's demo", 'dx-challenger' )
 				),
 				'linkCode' => array(
 					'type' => 'String',
-					'description' => __( 'Repository link', $text_domain )
+					'description' => __( 'Repository link', 'dx-challenger' )
 				),
 				'comment' => array(
 					'type' => 'String',
-					'description' => __( 'Comment', $text_domain )
+					'description' => __( 'Comment', 'dx-challenger' )
 				),
 			),
 
 			'outputFields' => array(
 				'challengeId' => array(
 					'type' => 'Number',
-					'description' => __( 'Challenge id', $text_domain),
+					'description' => __( 'Challenge id', 'dx-challenger'),
 					'resolve' => function($payload) {
 						return $payload['challengeId'];
 					}
 				),
 				'userId' => array(
 					'type' => 'Number',
-					'description' => __( 'User id', $text_domain),
+					'description' => __( 'User id', 'dx-challenger'),
 					'resolve' => function($payload) {
 						return $payload['userId'];
 					}
 				),
 				'linkDemo' => array(
 					'type' => 'String',
-					'description' => __( "Link to solution's demo", $text_domain ),
+					'description' => __( "Link to solution's demo", 'dx-challenger' ),
 					'resolve' => function($payload) {
 						return $payload['linkDemo'];
 					}
 				),
 				'linkCode' => array(
 					'type' => 'String',
-					'description' => __( 'Repository link', $text_domain ),
+					'description' => __( 'Repository link', 'dx-challenger' ),
 					'resolve' => function($payload) {
 						return $payload['linkCode'];
 					}
 				),
 				'comment' => array(
 					'type' => 'String',
-					'description' => __( 'Comment', $text_domain ),
+					'description' => __( 'Comment', 'dx-challenger' ),
 					'resolve' => function($payload) {
 						return $payload['comment'];
 					}
