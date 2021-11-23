@@ -242,12 +242,10 @@ class Challenge {
 				'fromFieldName'  => 'solutions',
 				'oneToOne'       => true,
 				'resolve'        => function ( $source, $args, $context, $info ) {
-					$resolver = new WPGraphQL\Data\Connection\UserConnectionResolver( $source, $args, $context, $info );
-					$resolver->set_query_arg( 'p', [ $source ] );
-					return $resolver->one_to_one()->get_connection();
+					$resolver = new SolutionConnectionResolver( $source, $args, $context, $info );
+					return $resolver->get_connection();
 				}
 			]
 		);
 	}
-
 }

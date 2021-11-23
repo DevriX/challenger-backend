@@ -36,7 +36,9 @@ class DX_Challenger {
 	 */
 	public function include_classes() {
 		require_once DXP_DIR . 'includes/class-challenge.php';
+		require_once DXP_DIR . 'includes/class-solution-loader.php';
 		require_once DXP_DIR . 'includes/class-solution.php';
+		require_once DXP_DIR . 'includes/class-solution-resolver.php';
 	}
 
 	/**

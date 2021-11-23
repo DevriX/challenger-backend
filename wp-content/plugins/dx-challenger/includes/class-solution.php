@@ -16,6 +16,7 @@ class Solution {
 	public function __construct() {
 		add_action( 'graphql_register_types', array( $this, 'dx_solution_mutation' ) );
 		add_action( 'graphql_register_types', array( $this, 'dx_challenger_solution_graphql' ) );
+		add_filter( 'graphql_data_loaders', array( $this, 'dx_add_solution_loader' ), 10, 2 );
 	}
 
 	/* Add solutions to GraphQL */
@@ -183,4 +184,8 @@ class Solution {
 		);
 	}
 
+	function dx_add_solution_loader( $loaders, $that ) {
+		$loaders['solution'] = new SolutionLoader( $that );
+		return $loaders;
+	}
 }
