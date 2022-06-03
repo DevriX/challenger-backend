@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:ignore
 /**
  * Plugin Name:     Dx Challenger
  * Plugin URI:      https://devrix.com
@@ -21,10 +21,13 @@ if ( ! defined( 'DXP_DIR' ) ) {
 }
 
 /**
- * 
+ * Main plugin class
  */
 class DX_Challenger {
 
+	/**
+	 * Constructor
+	 */
 	public function __construct() {
 		add_action( 'plugins_loaded', array( $this, 'include_classes' ), 10 );
 		add_action( 'init', array( $this, 'init' ), 20 );
@@ -36,9 +39,6 @@ class DX_Challenger {
 	 */
 	public function include_classes() {
 		require_once DXP_DIR . 'includes/class-challenge.php';
-		require_once DXP_DIR . 'includes/class-solution-loader.php';
-		require_once DXP_DIR . 'includes/class-solution.php';
-		require_once DXP_DIR . 'includes/class-solution-resolver.php';
 	}
 
 	/**
@@ -46,7 +46,6 @@ class DX_Challenger {
 	 */
 	public function init() {
 		new Challenge();
-		new Solution();
 	}
 
 }
@@ -65,7 +64,7 @@ function dx_challenger_on_install() {
 
 	require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
-	if ( $wpdb->get_var( "show tables like '$solutions_table'" ) != $solutions_table ) {
+	if ( $wpdb->get_var( "show tables like '$solutions_table'" ) !== $solutions_table ) {
 		$sql = "CREATE TABLE $solutions_table (
 			id mediumint(9) NOT NULL AUTO_INCREMENT,
 			challenge_id mediumint(9) NOT NULL,
@@ -79,7 +78,7 @@ function dx_challenger_on_install() {
 			dbDelta( $sql );
 	}
 
-	if ( $wpdb->get_var( "show tables like '$voting_table'" ) != $voting_table ) {
+	if ( $wpdb->get_var( "show tables like '$voting_table'" ) !== $voting_table ) {
 		$voting_sql = "CREATE TABLE $voting_table (
 			challenge_id mediumint(9) NOT NULL AUTO_INCREMENT,
 			user_voted mediumint(9) NOT NULL,
